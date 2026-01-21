@@ -4,6 +4,5 @@ water_project copy.ipynb
 .idea/
 .ipynb_checkpoints/
 bin/
-csv/
 logs/
 share/
