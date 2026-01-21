@@ -1,10 +1,12 @@
 # import packages
+import pickle
+
 import pandas as pd
 import polars as pl
-import streamlit as st 
-import pickle
+import streamlit as st
+from sklearn.metrics import classification_report, f1_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, classification_report
+
 # set the title for all the pages
 st.title('Water Quality Detection Project')
 # create a drop-down menu for the 4 pages of the project
@@ -50,13 +52,15 @@ if box_sections == 'Exploratory Data Analysis':
 # create two buttons before and after cleaning to display informations of the dataset
        if st.checkbox('Before Cleaning'):
 # load the before cleaning dataset using polars
-              df = pl.read_csv('csv\Water_Quality_Prediction.csv')
+              df = pl.read_csv('csv/Water_Quality_Prediction.csv')
               df = pd.DataFrame(df)
+              print(df)
               df.columns = ['Index', 'pH', 'Iron', 'Nitrate', 'Chloride', 'Lead', 'Zinc', 'Color',
                             'Turbidity', 'Fluoride', 'Copper', 'Odor', 'Sulfate', 'Conductivity',
                             'Chlorine', 'Manganese', 'Total Dissolved Solids', 'Source',
                             'Water Temperature', 'Air Temperature', 'Month', 'Day', 'Time of Day',
                             'Target']
+              df.drop("Index", axis=1, inplace=True)
 # display head and tail of the dataset
               st.write(df.head(5))
               st.write(df.tail(5))
@@ -74,7 +78,7 @@ if box_sections == 'Exploratory Data Analysis':
               st.text(s)
        if st.checkbox('After Cleaning'):
 # load the after cleaning dataset
-              df = pl.read_csv('csv\Water_Quality_Prediction_Clean.csv')
+              df = pl.read_csv('csv/Water_Quality_Prediction_Clean.csv')
               df = pd.DataFrame(df)
               df.columns = ['pH', 'Iron', 'Nitrate', 'Chloride', 'Zinc', 'Color',
                             'Turbidity', 'Fluoride', 'Copper', 'Odor', 'Sulfate', 'Conductivity',
@@ -101,7 +105,7 @@ if box_sections == 'Plots':
        In the dataset we encountered a lot of null values
        '''
 # load the barplot of the null values
-       st.image('images\inull_val.png')
+       st.image('images/inull_val.png')
        '''
        After cleaning our dataset, we ended up with 0 null values accross all variables.
        '''
@@ -109,26 +113,26 @@ if box_sections == 'Plots':
        The correlation between variables can be seen from the following heatmap:
        '''
 # load the heatmap of the dataset
-       st.image('images\heatmap.png')
+       st.image('images/heatmap.png')
        '''
        No big correlations between variables, so we'll keep them all.\n 
        It seems that Color and Turbidity have one of the highest correlation with Potability: this was somewhat expected, because even in our daily life we are suspicious of water that isn't transparent or seems turbid. We can better check the relation between Color and Potability.
        '''
 # create a button to display the frequency table between color and potability
        if st.checkbox('Show frequency table of Color and Potability'):
-              st.image('images\Color-Potability.png')
+              st.image('images/Color-Potability.png')
        '''
        Another "relevant" correlation might be between Manganese and Turbidity. Potable water usually has very low levels of Manganese and Turbidity levels between 0 and 1.
        '''
 # create a button to display the scatterplot between manganese and turbidity
        if st.checkbox('Show scatterplot between Manganese and Turbidity'):
-              st.image('images\Manganese-Turbidity.png')
+              st.image('images/Manganese-Turbidity.png')
        '''
        Also, it might be important to check the correlation between Color and Turbidity since intuitively they should have some type of connection.
        '''
 # create a button to display the boxplot between color and turbidity
        if st.checkbox('Show boxplot of Color and Turbidity'):
-              st.image('images\Color-Turbidity.png')
+              st.image('images/Color-Turbidity.png')
        '''
        It's crucial that our cleaning of the dataset didn't impact too much our variables.\n 
        If that was the case, we might encounter some lower performances in the model part of the project.
@@ -147,37 +151,37 @@ if box_sections == 'Plots':
                                                                              label_visibility = 'collapsed', key = 'distr')
 # load the image of the type of graph and variable selected
               if box_distr_features == 'None':
-                     st.image('images\distr\iNone.png') 
+                     st.image('images/distr/iNone.png') 
               if box_distr_features == 'pH':
-                     st.image('images\distr\pH.png')
+                     st.image('images/distr/pH.png')
               if box_distr_features == 'Iron':
-                     st.image('images\distr\Iron.png')
+                     st.image('images/distr/Iron.png')
               if box_distr_features == 'Nitrate':
-                     st.image('images\distr\iNitrate.png')
+                     st.image('images/distr/iNitrate.png')
               if box_distr_features == 'Chloride':
-                     st.image('images\distr\Chloride.png')
+                     st.image('images/distr/Chloride.png')
               if box_distr_features == 'Zinc':
-                     st.image('images\distr\Zinc.png')
+                     st.image('images/distr/Zinc.png')
               if box_distr_features == 'Color':
-                     st.image('images\distr\Color.png')
+                     st.image('images/distr/Color.png')
               if box_distr_features == 'Turbidity':
-                     st.image('images\distr\Turbidity.png')
+                     st.image('images/distr/Turbidity.png')
               if box_distr_features == 'Fluoride':
-                     st.image('images\distr\Fluoride.png')
+                     st.image('images/distr/Fluoride.png')
               if box_distr_features == 'Copper':
-                     st.image('images\distr\Copper.png')
+                     st.image('images/distr/Copper.png')
               if box_distr_features == 'Odor':
-                     st.image('images\distr\Odor.png')
+                     st.image('images/distr/Odor.png')
               if box_distr_features == 'Sulfate':
-                     st.image('images\distr\Sulfate.png')
+                     st.image('images/distr/Sulfate.png')
               if box_distr_features == 'Conductivity':
-                     st.image('images\distr\Conductivity.png')
+                     st.image('images/distr/Conductivity.png')
               if box_distr_features == 'Chlorine':
-                     st.image('images\distr\Chlorine.png')
+                     st.image('images/distr/Chlorine.png')
               if box_distr_features == 'Manganese':
-                     st.image('images\distr\Manganese.png')
+                     st.image('images/distr/Manganese.png')
               if box_distr_features == 'Total_Diss_Solids':
-                     st.image('images\distr\Total_Diss_Solids.png')
+                     st.image('images/distr/Total_Diss_Solids.png')
        if box_type_graph == 'Boxplot':
 # create a drop-down menu to select the variable
               box_boxplot_features = st.selectbox('Feature', ['None', 'pH', 'Iron', 'Nitrate', 'Chloride', 'Zinc', 
@@ -185,37 +189,37 @@ if box_sections == 'Plots':
                                                         'Conductivity', 'Chlorine', 'Manganese', 'Total_Diss_Solids'], label_visibility = 'collapsed', key = 'boxplot')
 # load the image of the type of graph and variable selected
               if box_boxplot_features == 'None':
-                     st.image('images\iboxplot\iNone.png')
+                     st.image('images/iboxplot/iNone.png')
               if box_boxplot_features == 'pH':
-                     st.image('images\iboxplot\pH.png')
+                     st.image('images/iboxplot/pH.png')
               if box_boxplot_features == 'Iron':
-                     st.image('images\iboxplot\Iron.png')
+                     st.image('images/iboxplot/Iron.png')
               if box_boxplot_features == 'Nitrate':
-                     st.image('images\iboxplot\iNitrate.png')
+                     st.image('images/iboxplot/iNitrate.png')
               if box_boxplot_features == 'Chloride':
-                     st.image('images\iboxplot\Chloride.png')
+                     st.image('images/iboxplot/Chloride.png')
               if box_boxplot_features == 'Zinc':
-                     st.image('images\iboxplot\Zinc.png')
+                     st.image('images/iboxplot/Zinc.png')
               if box_boxplot_features == 'Color':
-                     st.image('images\iboxplot\Color.png')
+                     st.image('images/iboxplot/Color.png')
               if box_boxplot_features == 'Turbidity':
-                     st.image('images\iboxplot\Turbidity.png')
+                     st.image('images/iboxplot/Turbidity.png')
               if box_boxplot_features == 'Fluoride':
-                     st.image('images\iboxplot\Fluoride.png')
+                     st.image('images/iboxplot/Fluoride.png')
               if box_boxplot_features == 'Copper':
-                     st.image('images\iboxplot\Copper.png')
+                     st.image('images/iboxplot/Copper.png')
               if box_boxplot_features == 'Odor':
-                     st.image('images\iboxplot\Odor.png')
+                     st.image('images/iboxplot/Odor.png')
               if box_boxplot_features == 'Sulfate':
-                     st.image('images\iboxplot\Sulfate.png')
+                     st.image('images/iboxplot/Sulfate.png')
               if box_boxplot_features == 'Conductivity':
-                     st.image('images\iboxplot\Conductivity.png')
+                     st.image('images/iboxplot/Conductivity.png')
               if box_boxplot_features == 'Chlorine':
-                     st.image('images\iboxplot\Chlorine.png')
+                     st.image('images/iboxplot/Chlorine.png')
               if box_boxplot_features == 'Manganese':
-                     st.image('images\iboxplot\Manganese.png')
+                     st.image('images/iboxplot/Manganese.png')
               if box_boxplot_features == 'Total_Diss_Solids':
-                     st.image('images\iboxplot\Total_Diss_Solids.png')
+                     st.image('images/iboxplot/Total_Diss_Solids.png')
        if box_type_graph == 'Violinplot':
 # create a drop-down menu to select the variable
               box_violinplot_features = st.selectbox('Feature violinplot', ['None', 'pH', 'Iron', 'Nitrate', 'Chloride', 'Zinc', 
@@ -223,37 +227,37 @@ if box_sections == 'Plots':
                                                         'Conductivity', 'Chlorine', 'Manganese', 'Total_Diss_Solids'], label_visibility = 'collapsed', key = 'violinplot')
 # load the image of the type of graph and variable selected
               if box_violinplot_features == 'None':
-                     st.image('images\iviolinplot\iNone.png')
+                     st.image('images/iviolinplot/iNone.png')
               if box_violinplot_features == 'pH':
-                     st.image('images\iviolinplot\pH.png')
+                     st.image('images/iviolinplot/pH.png')
               if box_violinplot_features == 'Iron':
-                     st.image('images\iviolinplot\Iron.png')
+                     st.image('images/iviolinplot/Iron.png')
               if box_violinplot_features == 'Nitrate':
-                     st.image('images\iviolinplot\iNitrate.png')
+                     st.image('images/iviolinplot/iNitrate.png')
               if box_violinplot_features == 'Chloride':
-                     st.image('images\iviolinplot\Chloride.png')
+                     st.image('images/iviolinplot/Chloride.png')
               if box_violinplot_features == 'Zinc':
-                     st.image('images\iviolinplot\Zinc.png')
+                     st.image('images/iviolinplot/Zinc.png')
               if box_violinplot_features == 'Color':
-                     st.image('images\iviolinplot\Color.png')
+                     st.image('images/iviolinplot/Color.png')
               if box_violinplot_features == 'Turbidity':
-                     st.image('images\iviolinplot\Turbidity.png')
+                     st.image('images/iviolinplot/Turbidity.png')
               if box_violinplot_features == 'Fluoride':
-                     st.image('images\iviolinplot\Fluoride.png')
+                     st.image('images/iviolinplot/Fluoride.png')
               if box_violinplot_features == 'Copper':
-                     st.image('images\iviolinplot\Copper.png')
+                     st.image('images/iviolinplot/Copper.png')
               if box_violinplot_features == 'Odor':
-                     st.image('images\iviolinplot\Odor.png')
+                     st.image('images/iviolinplot/Odor.png')
               if box_violinplot_features == 'Sulfate':
-                     st.image('images\iviolinplot\Sulfate.png')
+                     st.image('images/iviolinplot/Sulfate.png')
               if box_violinplot_features == 'Conductivity':
-                     st.image('images\iviolinplot\Conductivity.png')
+                     st.image('images/iviolinplot/Conductivity.png')
               if box_violinplot_features == 'Chlorine':
-                     st.image('images\iviolinplot\Chlorine.png')
+                     st.image('images/iviolinplot/Chlorine.png')
               if box_violinplot_features == 'Manganese':
-                     st.image('images\iviolinplot\Manganese.png')
+                     st.image('images/iviolinplot/Manganese.png')
               if box_violinplot_features == 'Total_Diss_Solids':
-                     st.image('images\iviolinplot\Total_Diss_Solids.png')
+                     st.image('images/iviolinplot/Total_Diss_Solids.png')
 # Prediction Model part of the project
 if box_sections == 'Prediction Model':
        '''
@@ -261,12 +265,12 @@ if box_sections == 'Prediction Model':
        As we can see from the Scree Plot, 2 Principal Components should be enough since most of the information is passed by in the dimensionality reduction.
        '''
        # load the scree plot png
-       st.image('images\scree.png')
+       st.image('images/scree.png')
        '''
        We can now visualize our data thanks to the PCA. Two clusters are visible. 
        '''
        # load the PCA scatterplot png
-       st.image('images\pca.png')
+       st.image('images/pca.png')
        '''
        ---
        The model used for predicting the potability of a sample water is RandomForestClassifier with a default number of decision trees equal to 100.
@@ -274,7 +278,7 @@ if box_sections == 'Prediction Model':
        # create a slider to select the size of the dataset and save the resulting integer in a variable
        t_size = st.slider('Choose test size', 10, 90, step = 10)
        # load the cleaned and already resampled dataset
-       df = pl.read_csv('csv\Water_Quality_Prediction_res.csv')
+       df = pl.read_csv('csv/Water_Quality_Prediction_res.csv')
        df = pd.DataFrame(df)
        df.columns = ['pH', 'Iron', 'Nitrate', 'Chloride', 'Zinc', 'Color',
                             'Turbidity', 'Fluoride', 'Copper', 'Odor', 'Sulfate', 'Conductivity',
@@ -292,7 +296,7 @@ if box_sections == 'Prediction Model':
        col2.write(f'Train size: {X_train.shape[0]}')
        col4.write(f'Test size: {X_test.shape[0]}')
        # load the pre-trained model
-       with open('model\potability_classifier.pkl', 'rb') as file:
+       with open('model/potability_classifier.pkl', 'rb') as file:
               model = pickle.load(file)
        # use the model to predict the potability of our test dataset
        y_pred_svm = model.predict(X_test)
@@ -321,7 +325,7 @@ if box_sections == 'Prediction Model':
        cv_df = pd.concat([n_est, scores], axis = 1).T
        col1, col2, col3 = st.columns([0.5, 5, 0.5])
        col2.write(cv_df)
-       st.image('images\k_fold.png', caption = 'How the CV mean accuracy score changes as the number of decision trees increases')
+       st.image('images/k_fold.png', caption = 'How the CV mean accuracy score changes as the number of decision trees increases')
        '''
        Except the case with 5 decision trees, the differences between the scores aren't really relevant, so we might choose for computational reasons to fix the number of decision trees to 50.
        '''
